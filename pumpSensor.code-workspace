@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "PumpSensorTransmitter"
+		},
+		{
+			"name": "PumpSensorReceiver",
+			"path": "PumpSensorReceiver"
+		}
+	],
+	"settings": {}
+}

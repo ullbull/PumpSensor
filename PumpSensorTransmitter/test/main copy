@@ -1,0 +1,46 @@
+
+#include "RF24.h"
+#include "Arduino.h"
+
+RF24 radio(9, 10);
+const byte address[] = "000012"; //Byte of array representing the address. This is the address where we will send the data. This should be same on the receiving side.
+int button_pin = 2;
+boolean button_state = 0;
+
+void setup() {
+    pinMode(button_pin, INPUT);
+    Serial.begin(9600);
+    radio.begin();
+    radio.openWritingPipe(address);
+    radio.setPALevel(RF24_PA_MIN);
+    radio.stopListening();
+}
+
+void loop() {
+    radio.openReadingPipe(0, address);
+    radio.startListening();
+    radio.read(&text, sizeof(text));
+    button_state = digitalRead(button_pin);
+    digitalWrite(1,HIGH);
+//    Print("button_state = ");
+//    Println(button_state);
+    if (button_state == HIGH) {
+        Serial.println("Button State is HIGH");
+        delay(300);
+
+        const int n = 1;
+        const int *pn = &n;
+
+//        const char text[] = "Your Button State is HIGH";
+        const char text[5] = "Hej";
+        radio.write(&text, sizeof(text));  // Sending the message to receiver
+    }
+    else {
+//        const char text[] = "Your Button State is LOW";
+//        radio.write(&text, sizeof(text));  // Sending the message to receiver
+    }
+
+   radio.write(&button_state, sizeof(button_state));  // Sending the message to receiver
+
+    delay(10);
+}
