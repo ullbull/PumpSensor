@@ -1,0 +1,15 @@
+C:/Users/UlrikKarlsson/OneDrive - Embeddedart/Documents/PlatformIO/Projects/PumpSensor/PumpSensorReceiver/include
+C:/Users/UlrikKarlsson/OneDrive - Embeddedart/Documents/PlatformIO/Projects/PumpSensor/PumpSensorReceiver/src
+C:/Users/UlrikKarlsson/OneDrive - Embeddedart/Documents/PlatformIO/Projects/PumpSensor/PumpSensorReceiver/.pio/libdeps/nanoatmega328new/RF24
+C:/Users/UlrikKarlsson/OneDrive - Embeddedart/Documents/PlatformIO/Projects/PumpSensor/PumpSensorReceiver/.pio/libdeps/nanoatmega328new/RF24/utility
+C:/Users/UlrikKarlsson/.platformio/packages/framework-arduino-avr/libraries/SPI/src
+C:/Users/UlrikKarlsson/.platformio/packages/framework-arduino-avr/cores/arduino
+C:/Users/UlrikKarlsson/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs
+C:/Users/UlrikKarlsson/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src
+C:/Users/UlrikKarlsson/.platformio/packages/framework-arduino-avr/libraries/HID/src
+C:/Users/UlrikKarlsson/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src
+C:/Users/UlrikKarlsson/.platformio/packages/framework-arduino-avr/libraries/Wire/src
+C:/Users/UlrikKarlsson/.platformio/packages/tool-unity
+
+C:/Users/UlrikKarlsson/OneDrive - Embeddedart/Documents/PlatformIO/Projects/PumpSensor/PumpSensorTransmitter/include
+C:/Users/UlrikKarlsson/OneDrive - Embeddedart/Documents/PlatformIO/Projects/PumpSensor/PumpSensorTransmitter/.pio/libdeps/nanoatmega328new/RF24

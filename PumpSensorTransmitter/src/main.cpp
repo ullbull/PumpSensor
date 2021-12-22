@@ -18,10 +18,10 @@ Status pumpToggleState;
 const int pumpSwitchPin = 6;
 const int ledPinStatus = 4;
 const int ledPinPumpOnOff = 2;
-AsyncBlinker blinkOk = AsyncBlinker(ledPinStatus, 10, 1990);
-AsyncBlinker blinkLowAirLevel = AsyncBlinker(ledPinStatus, 200, 100);
-AsyncBlinker blinkNoPumpActivity = AsyncBlinker(ledPinStatus, 2000, 100);
-AsyncBlinker blinkNoRadio = AsyncBlinker(ledPinStatus, 10000, 100);
+AsyncBlinker blinkOk = AsyncBlinker(0, ledPinStatus, 10, 1990);
+AsyncBlinker blinkLowAirLevel = AsyncBlinker(0, ledPinStatus, 200, 100);
+AsyncBlinker blinkNoPumpActivity = AsyncBlinker(0, ledPinStatus, 2000, 100);
+AsyncBlinker blinkNoRadio = AsyncBlinker(0, ledPinStatus, 10000, 100);
 
 int buttonState = 0;
 int newPumpState = 0;

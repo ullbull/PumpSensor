@@ -9,29 +9,32 @@
 
 class AsyncBlinker {
 private:
-    int m_pin;
-    int m_onTime;
-    int m_offTime;
-    unsigned long m_timeAtLastRun;
-    unsigned long m_timeSinceLastCycle;
-    int m_numberOfBlinks = 0;
+  int m_pin;
+  int m_delay;
+  int m_onTime;
+  int m_offTime;
+  unsigned long m_timeAtLastRun;
+  unsigned long m_timeSinceLastCycle;
+  int m_numberOfBlinks = 0;
+
 public:
-    AsyncBlinker(int pin, int offTime, int onTime);
+  AsyncBlinker(int pin, int delay, int offTime, int onTime);
 
-    ~AsyncBlinker();
+  ~AsyncBlinker();
 
-    void setOnTime(int onTime);
+  void setDelay(int delay);
 
-    void setOffTime(int offTime);
+  void setOnTime(int onTime);
 
-    // This method must be called on every round in main loop
-    void run(unsigned long currentTime);
+  void setOffTime(int offTime);
 
-    // Call this method when you want to blink the LED
-    void blink(int numberOfBlinks);
+  // This method must be called on every round in main loop
+  void run(unsigned long currentTime);
 
-    void resetTimer();
+  // Call this method when you want to blink the LED
+  void blink(int numberOfBlinks);
+
+  void resetTimer();
 };
 
-
-#endif //TEST_ASYNCBLINKER_H
+#endif // TEST_ASYNCBLINKER_H
