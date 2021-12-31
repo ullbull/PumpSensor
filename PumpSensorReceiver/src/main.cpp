@@ -19,10 +19,10 @@ Status x = status;
 // Warn if no radio is received for this duration (milliseconds)
 unsigned long maxRadioReceiveInterval = 1000 * 5;
 
-const int buttonPin = 6;
 const int ledPinStatus = 2;
-const int ledPinNoPumpActivity = 4;
-const int ledPinPumpOnOff = 5;
+const int ledPinLowAirLevel = 3;
+const int ledPinPumpOnOff = 4;
+const int ledPinNoPumpActivity = 5;
 const int ledPinNoRadio = 6;
 
 AsyncBlinker blinkOk = AsyncBlinker(ledPinStatus, 0, 10, 1990);
@@ -40,9 +40,11 @@ RF24 radio(7, 8); // CE, CSN
 const byte address[6] = "00001";
 
 void setup() {
-  pinMode(buttonPin, INPUT);
   pinMode(ledPinStatus, OUTPUT);
+  pinMode(ledPinLowAirLevel, OUTPUT);
   pinMode(ledPinPumpOnOff, OUTPUT);
+  pinMode(ledPinNoPumpActivity, OUTPUT);
+  pinMode(ledPinNoRadio, OUTPUT);
 
   Serial.begin(9600);
 
@@ -112,6 +114,7 @@ void loop() {
     blinkOk.resetTimer();
   }
 
+  digitalWrite(ledPinLowAirLevel, status == Status::lowAirLevel);
   digitalWrite(ledPinNoPumpActivity, status == Status::noPumpActivity);
   digitalWrite(ledPinNoRadio, status == Status::noRadio);
 
