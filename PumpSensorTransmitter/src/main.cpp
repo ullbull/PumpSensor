@@ -31,7 +31,8 @@ unsigned long timeAtPumpOn;
 unsigned long timeAtPumpOff;
 unsigned long timeAtLastTransmit;
 
-// Alarm for low pressure if the pump is on for less time than this duration. (Milliseconds).
+// Alarm for low pressure if the pump is on for less time than this duration.
+// (Milliseconds).
 int pumpMinOnDuration = 10000;
 // Alarm for no pump activity if pump is off for longer than this.
 double pumpMaxOffTime_hours = 24;
@@ -40,6 +41,10 @@ unsigned int pumpMaxOffTime = pumpMaxOffTime_hours * 3600000;
 int transmitInterval = 1000 * 2;
 boolean pumpIsToggled = false;
 unsigned long currentTime;
+
+// Trigger alarm when I have received more than this number of alarms in a row
+int nAlarmsLimit = 3;
+int nAlarms = 0;
 
 RF24 radio(7, 8);
 const byte address[6] = "00001";
@@ -93,9 +98,16 @@ void loop() {
 
       pumpOnDuration = timeAtPumpOff - timeAtPumpOn;
       if (pumpOnDuration < pumpMinOnDuration) {
-        message = "Low air level";
-        status = Status::lowAirLevel;
+        // This is alarm
+        nAlarms++;
+        if (nAlarms > nAlarmsLimit) {
+          message = "Low air level";
+          status = Status::lowAirLevel;
+        }
       } else {
+        // No alarm.
+        nAlarms = 0;
+
         message = "ok";
         status = Status::ok;
         errorToggles = 0;
