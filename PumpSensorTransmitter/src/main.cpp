@@ -18,10 +18,10 @@ Status pumpToggleState;
 const int pumpSwitchPin = 6;
 const int ledPinStatus = 4;
 const int ledPinPumpOnOff = 2;
-AsyncBlinker blinkOk = AsyncBlinker(0, ledPinStatus, 10, 1990);
-AsyncBlinker blinkLowAirLevel = AsyncBlinker(0, ledPinStatus, 200, 100);
-AsyncBlinker blinkNoPumpActivity = AsyncBlinker(0, ledPinStatus, 2000, 100);
-AsyncBlinker blinkNoRadio = AsyncBlinker(0, ledPinStatus, 10000, 100);
+AsyncBlinker blinkOk = AsyncBlinker(ledPinStatus, 0, 10, 1990);
+AsyncBlinker blinkLowAirLevel = AsyncBlinker(ledPinStatus, 0, 200, 100);
+AsyncBlinker blinkNoPumpActivity = AsyncBlinker(ledPinStatus, 0, 2000, 100);
+AsyncBlinker blinkNoRadio = AsyncBlinker(ledPinStatus, 0, 10000, 100);
 
 int buttonState = 0;
 int newPumpState = 0;
@@ -100,6 +100,9 @@ void loop() {
         status = Status::ok;
         errorToggles = 0;
       }
+
+      // Add delay to avoid quick on/off
+      delay(300);
     }
   } else { // if Pump is off
     if (newPumpState == 1) {
@@ -110,6 +113,9 @@ void loop() {
       digitalWrite(ledPinPumpOnOff, 1);
       pumpToggleState = Status::pumpToggleOn;
       radio.write(&pumpToggleState, sizeof(pumpToggleState));
+
+      // Add delay to avoid quick on/off
+      delay(300);
     }
   }
 
