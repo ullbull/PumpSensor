@@ -1,8 +1,82 @@
-#include "Arduino.h"
-#include "AsyncBlinker.h"
-#include <RF24.h>
-#include <SPI.h>
-#include <nRF24L01.h>
+
+
+class AsyncBlinker {
+private:
+  int m_pin;
+  int m_delay;
+  int m_onTime;
+  int m_offTime;
+  unsigned long m_timeAtLastRun;
+  unsigned long m_timeSinceLastCycle;
+  int m_numberOfBlinks = 0;
+
+public:
+  AsyncBlinker(int pin, int delay, int offTime, int onTime);
+
+  ~AsyncBlinker();
+
+  void setDelay(int delay);
+
+  void setOnTime(int onTime);
+
+  void setOffTime(int offTime);
+
+  // This method must be called on every round in main loop
+  void run(unsigned long currentTime);
+
+  // Call this method when you want to blink the LED
+  void blink(int numberOfBlinks);
+
+  void resetTimer();
+};
+
+
+
+AsyncBlinker::AsyncBlinker(int pin, int delay, int onTime, int offTime) {
+  m_timeAtLastRun = millis();
+  m_timeSinceLastCycle = 0;
+  m_pin = pin;
+  setDelay(delay);
+  setOnTime(onTime);
+  setOffTime(offTime);
+}
+
+AsyncBlinker::~AsyncBlinker() {}
+
+void AsyncBlinker::setDelay(int delay) { m_delay = delay; }
+
+void AsyncBlinker::setOnTime(int onTime) { m_onTime = onTime; }
+
+void AsyncBlinker::setOffTime(int offTime) { m_offTime = offTime; }
+
+void AsyncBlinker::run(unsigned long currentTime) {
+  if (m_numberOfBlinks > 0) {
+    m_timeSinceLastCycle += currentTime - m_timeAtLastRun;
+    if (m_timeSinceLastCycle < m_delay) {
+      digitalWrite(m_pin, 0);
+    } else if (m_timeSinceLastCycle < m_delay + m_onTime) {
+      digitalWrite(m_pin, 1);
+    } else if (m_timeSinceLastCycle < m_delay + m_onTime + m_offTime) {
+      digitalWrite(m_pin, 0);
+    } else {
+      m_numberOfBlinks -= 1;
+      m_timeSinceLastCycle = 0;
+    }
+    m_timeAtLastRun = currentTime;
+  }
+}
+
+void AsyncBlinker::blink(int numberOfBlinks) {
+  m_numberOfBlinks = numberOfBlinks;
+}
+
+void AsyncBlinker::resetTimer() {
+  m_timeSinceLastCycle = 0;
+  m_timeAtLastRun = millis();
+}
+
+////////////// AsyncBlinker end ///////////////////
+
 
 enum class Status {
   ok,
@@ -10,7 +84,6 @@ enum class Status {
   noPumpActivity,
   pumpToggleOn,
   pumpToggleOff,
-  noRadio,
 };
 Status status = Status::noPumpActivity;
 Status pumpToggleState;
@@ -21,7 +94,6 @@ const int ledPinPumpOnOff = 2;
 AsyncBlinker blinkOk = AsyncBlinker(ledPinStatus, 0, 10, 1990);
 AsyncBlinker blinkLowAirLevel = AsyncBlinker(ledPinStatus, 0, 200, 100);
 AsyncBlinker blinkNoPumpActivity = AsyncBlinker(ledPinStatus, 0, 2000, 100);
-AsyncBlinker blinkNoRadio = AsyncBlinker(ledPinStatus, 0, 10000, 100);
 
 int buttonState = 0;
 bool pumpState = false;
@@ -48,7 +120,6 @@ int nAlarmsLimit = 2;
 unsigned long nAlarms = 0;
 unsigned long nOK = 0;
 
-RF24 radio(7, 8);
 const byte address[6] = "00001";
 
 void setup() {
@@ -59,15 +130,11 @@ void setup() {
   Serial.begin(9600);
 
   // Starting the Wireless communication
-  radio.begin();
   // Setting the address where we will send the data
-  radio.openWritingPipe(address);
   // You can set this as minimum or maximum depending on the
   // distance between the transmitter and receiver.
-  radio.setPALevel(RF24_PA_MAX);
 
   // This sets the module as transmitter
-  radio.stopListening();
   Serial.println("Transmitter unit");
 
   currentTime = millis();
@@ -126,7 +193,6 @@ void loop() {
       }
     }
     digitalWrite(ledPinPumpOnOff, pumpState);
-    radio.write(&pumpToggleState, sizeof(pumpToggleState));
   }
 
   timeSinceLastPumpOn = currentTime - timeAtPumpOn;
@@ -146,8 +212,6 @@ void loop() {
   // Send status at a fixed interval
   if (timeSinceLastTransmit >= transmitInterval) {
     timeAtLastTransmit = currentTime;
-    radio.write(&status, sizeof(status));
-    radio.write(&pumpToggleState, sizeof(pumpToggleState));
     Serial.println(message);
   }
 
