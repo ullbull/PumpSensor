@@ -34,17 +34,17 @@ unsigned long timeAtLastTransmit;
 
 // Alarm for low pressure if the pump is on for less time than this duration.
 // (Milliseconds).
-int pumpMinOnDuration = 10000;
+const int pumpMinOnDuration = 10000;
 // Alarm for no pump activity if pump is off for longer than this.
-double pumpMaxOffTime_hours = 24;
-unsigned long pumpMaxOffTime = pumpMaxOffTime_hours * 3600000;
+const double pumpMaxOffTime_hours = 12;
+const unsigned long pumpMaxOffTime = pumpMaxOffTime_hours * 3600000;
 
-int transmitInterval = 1000 * 2;
+const int transmitInterval = 1000 * 2;
 boolean pumpIsToggled = false;
 unsigned long currentTime;
 
 // Trigger alarm when I have received more than this number of alarms in a row
-int nAlarmsLimit = 2;
+const int nAlarmsLimit = 2;
 unsigned long nAlarms = 0;
 unsigned long nOK = 0;
 
@@ -76,11 +76,11 @@ void setup() {
   timeAtLastTransmit = currentTime;
 }
 
-unsigned int timeSinceLastPumpOn = 0;
-unsigned int timeSinceLastPumpOff = 0;
-unsigned int timeSinceLastTransmit = 0;
-unsigned int totalPumpOnDuration = 0;
-boolean readyToAlert = true;
+unsigned long timeSinceLastPumpOn = 0;
+unsigned long timeSinceLastPumpOff = 0;
+unsigned long timeSinceLastTransmit = 0;
+unsigned long totalPumpOnDuration = 0;
+boolean has_changed_to_no_pump_activity = false;
 String message = "Status: No pump activity!";
 
 void loop() {
@@ -92,7 +92,7 @@ void loop() {
     pumpState = newPumpState;
 
     // Add delay to avoid quick on/off
-    delay(300);
+    delay(500);
 
     if (pumpState == true) {
       // The pump was toggled on
@@ -110,7 +110,7 @@ void loop() {
       if (totalPumpOnDuration < pumpMinOnDuration) {
         // This is low air level
         nAlarms++;
-        if (nAlarms > nAlarmsLimit) {
+        if (nAlarms >= nAlarmsLimit) {
           message = "Status: Low air level";
           status = Status::lowAirLevel;
           nOK = 0;
@@ -134,13 +134,14 @@ void loop() {
   timeSinceLastTransmit = currentTime - timeAtLastTransmit;
 
   if (timeSinceLastPumpOn > pumpMaxOffTime) {
-    if (readyToAlert) {
-      readyToAlert = false;
+    if (!has_changed_to_no_pump_activity) {
       message = "Status: No pump activity!";
       status = Status::noPumpActivity;
+      has_changed_to_no_pump_activity = true;
     }
-  } else {
-    readyToAlert = true;
+  } 
+  else {
+    has_changed_to_no_pump_activity = false;
   }
 
   // Send status at a fixed interval
